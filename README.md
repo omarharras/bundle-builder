@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# Bundle Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React/TypeScript prototype for a multi-step bundle builder with a live review panel.
 
-Currently, two official plugins are available:
+## Run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Build
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
+npm run lint
 ```
+
+## Architecture
+
+- Vite, React, TypeScript, and Tailwind CSS v4.
+- Local JSON data in `src/data/bundleData.json`, with typed exports from `src/data/bundleData.ts`.
+- Shared state via React Context and `useReducer`.
+- Quantities are stored once by product and variant/default option.
+- Review lines, selected counts, totals, and savings are derived from selectors.
+
+## Quantity And Variants
+
+Variant product quantities are grouped under the product ID, for example `wyze-cam-v4.white`. Non-variant products use a `default` option. A product card stepper edits the active variant only, while the review panel lists every selected variant independently.
+
+## Persistence
+
+`Save my system for later` stores quantities, active variants, and the open step in `localStorage`. Reloading restores the saved system; otherwise the app uses Figma-matching seeded defaults.
+
+## Notes
+
+- Product images are local assets under `public/figma-assets`.
+- Gilroy font files are bundled locally under `src/assets/fonts`.
+- Non-camera accordion steps render the seeded system items as read-only cards because the design view has no add controls for those products.
+- Required seeded items use `minQuantity` in the JSON data so their steppers show the disabled state at the design minimum.
+- Shipping is shown in review as `FREE` but excluded from totals to match the Figma total.
